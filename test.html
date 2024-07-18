@@ -9,19 +9,52 @@
             border: 3px solid black;
             margin: 10px;
         }
+
+        .modal {
+            display:    none;
+            position:   fixed;
+            z-index:    1000;
+            top:        0;
+            left:       0;
+            height:     100%;
+            width:      100%;
+            background: rgba( 255, 255, 255, .8) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+        }
+
+        /* prevent scrollbar from display during load */
+        body.loading {
+            overflow: hidden;   
+        }
+
+        /* display the modal when loading class is added to body */
+        body.loading .modal {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <div class="modal"></div>
 
 <video id="video" autoplay></video>
 <canvas id="canvas"></canvas>
 <button id="capture">Capture Image</button>
+
+<script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 
 <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const captureButton = document.getElementById('capture');
     const context = canvas.getContext('2d');
+
+    document.body.classList.add('loading');
+
+    function onOpenCvReady() {
+        document.body.classList.remove('loading');
+    }   
 
     // Access the webcam
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -45,6 +78,7 @@
         console.log(imageData); // Log the image data URL
     });
 </script>
+
 
 </body>
 </html>
