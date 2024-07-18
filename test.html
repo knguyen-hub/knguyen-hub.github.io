@@ -38,46 +38,46 @@
 <body>
     <div class="modal"></div>
 
-<video id="video" autoplay></video>
-<canvas id="canvas"></canvas>
-<button id="capture">Capture Image</button>
+    <video id="video" autoplay></video>
+    <canvas id="canvas"></canvas>
+    <button id="capture">Capture Image</button>
 
-<script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+    <script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
 
-<script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const captureButton = document.getElementById('capture');
-    const context = canvas.getContext('2d');
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const context = canvas.getContext('2d');
 
-    document.body.classList.add('loading');
+        document.body.classList.add('loading');
 
-    function onOpenCvReady() {
-        document.body.classList.remove('loading');
-    }   
+        function onOpenCvReady() {
+            document.body.classList.remove('loading');
+        }   
 
-    // Access the webcam
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            video.srcObject = stream;
-            
-            // Set canvas dimensions to match video dimensions
-            video.addEventListener('loadedmetadata', () => {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+        // Access the webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                
+                // Set canvas dimensions to match video dimensions
+                video.addEventListener('loadedmetadata', () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                });
+            })
+            .catch(err => {
+                console.error("Error accessing webcam: ", err);
             });
-        })
-        .catch(err => {
-            console.error("Error accessing webcam: ", err);
-        });
 
-    // Capture image from the video stream
-    captureButton.addEventListener('click', () => {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = canvas.toDataURL('image/png'); // Get the image data as a PNG
-        console.log(imageData); // Log the image data URL
-    });
-</script>
+        // Capture image from the video stream
+        captureButton.addEventListener('click', () => {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png'); // Get the image data as a PNG
+            console.log(imageData); // Log the image data URL
+        });
+    </script>
 
 
 </body>
