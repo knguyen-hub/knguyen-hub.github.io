@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam Image Capture</title>
+    <style>
+        video, canvas {
+            border: 3px solid black;
+            margin: 10px;
+        }
+    </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js"
+        crossorigin="anonymous"></script>
+    
+</head>
+<body>
+    <div id="output_view">
+        <video id="video" autoplay></video>
+    </div>
+    
+    <script>
+        const video = document.getElementById('video');
+
+
+        function onOpenCvReady() {
+        }   
+
+        // Access the webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                
+            })
+            .catch(err => {
+                console.error("Error accessing webcam: ", err);
+            });
+
+    </script>
+
+
+    <script async src="opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+
+    <script>
+        const vision = await FilesetResolver.forVisionTasks(
+            // path/to/wasm/root
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+        );
+        const handLandmarker = await HandLandmarker.createFromOptions(
+            vision,
+            {
+                baseOptions: {
+                    modelAssetPath: "hand_landmarker.task"
+                },
+                numHands: 2
+            });
+
+    </script>
+    
+</body>
+</html>
