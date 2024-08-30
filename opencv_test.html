@@ -35,6 +35,7 @@
     </style>
 </head>
 <body>
+    <p id="status">OpenCV.js is loading...</p>
     <div class="modal"></div>
     <video id="video" autoplay></video>
     <canvas id="canvasFrame"></canvas>
@@ -72,10 +73,12 @@
                         console.error("Error accessing webcam: ", err);
                     });
                 
-                
+                let canvasFrame = document.getElementById("canvasFrame");
+                let context = canvasFrame.getContext("2d");
                 let src = new cv.Mat(height, width, cv.CV_8UC4);
                 let dst = new cv.Mat(height, width, cv.CV_8UC1);
-                let cap = new cv.VideoCapture(video);
+                console.log("mats created");
+                //let cap = new cv.VideoCapture(video);
                 const FPS = 30;
                 function processVideo() {
                     try {
@@ -85,7 +88,11 @@
                             return;
                         }*/
                         let begin = Date.now();
-                        cap.read(src);
+                        //cap.read(src);
+
+                        context.drawImage(video, 0, 0, width, height);
+                        src.data.set(context.getImageData(0, 0, width, height).data);
+
                         cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
                         cv.imshow("canvasOutput", dst);
                         // schedule next one.
@@ -113,6 +120,13 @@
  
 // schedule first one.
 setTimeout(processVideo, 0);*/
+    var Module = {
+        // https://emscripten.org/docs/api_reference/module.html#Module.onRuntimeInitialized
+        onRuntimeInitialized() {
+            document.getElementById('status').innerHTML = 'OpenCV.js is ready.';
+            console.log("opencv done");
+        }
+    };
     </script>
     
 </body>
