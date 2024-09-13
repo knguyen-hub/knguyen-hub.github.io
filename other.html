@@ -86,13 +86,10 @@
                 cv.resize(x, x, dsize, 0, 0, cv.INTER_AREA);
                 
                 cv.meanStdDev(x, mean, std);
-                let meanVal = mean.doubleAt(0);
-                let standardDeviation = std.doubleAt(0, 0);
                 //console.log(meanVal);
                 //x = (x-meanVal) / standardDeviation;
                 cv.subtract(x, mean, x);
                 cv.divide(x, std, x);
-                console.log(x);
 
                 // draw rect on src
                 cv.rectangle(dst, new cv.Point(30,30), new cv.Point(100, 100), new cv.Scalar(0,0,0), 1);
