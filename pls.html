@@ -13,6 +13,8 @@
 <body>
     <h2>Hello OpenCV.js</h2>
     <p id="status">OpenCV.js is loading...</p>
+    <h2 id="letter_detected"> </h2>
+    <button id="start_button" onclick="buttonClicked()">Click me</button>
 
     <video id="video" autoplay></video>
     <canvas id="canvasFrame"></canvas>
@@ -30,10 +32,16 @@
                 let width = 0;
                 let height = 0;
 
-                navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                var button = document.getElementById("start_button");
+
+                navigator.mediaDevices.getUserMedia({ video: true, audio: false }) // getUserMedia returns promise
                     .then(stream => {
                         video.srcObject = stream;
+                        console.log("playing video now");
                         video.play();
+
+                        button.addEventListener("click", buttonClicked);
+
                         // Set canvas dimensions to match video dimensions
                         video.addEventListener('loadedmetadata', () => {
                             width = video.videoWidth;
@@ -41,43 +49,49 @@
                             height = video.videoHeight;
                             
                         });
+
+                        let canvasFrame = document.getElementById("canvasFrame");
+                        let context = canvasFrame.getContext("2d");
+                        let src = new cv.Mat(height, width, cv.CV_8UC4);
+                        let dst = new cv.Mat(height, width, cv.CV_8UC1);
+                        let cap = new cv.VideoCapture(video);
+                        const FPS = 30;
+
+                        function processVideo() {
+                            try {
+                                /*if (!streaming) {
+                                    src.delete();
+                                    dst.delete();
+                                    return;
+                                }*/
+                                let begin = Date.now();
+                                console.log("reading cap now");
+                                cap.read(src);
+
+                                cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+                                cv.imshow("canvasOutput", dst);
+                                // schedule next one.
+                                let delay = 1000/FPS - (Date.now() - begin);
+                                setTimeout(processVideo, delay);
+                            } catch (err) {
+                                console.error(err);
+                            }
+                            
+                        };
+                        setTimeout(processVideo, 0);
                     })
                     
                     .catch(err => {
                         console.error("Error accessing webcam: ", err);
                     });
 
-                let canvasFrame = document.getElementById("canvasFrame");
-                let context = canvasFrame.getContext("2d");
-                let src = new cv.Mat(height, width, cv.CV_8UC4);
-                let dst = new cv.Mat(height, width, cv.CV_8UC1);
-                let cap = new cv.VideoCapture(video);
-                const FPS = 30;
-                function processVideo() {
-                    try {
-                        /*if (!streaming) {
-                            src.delete();
-                            dst.delete();
-                            return;
-                        }*/
-                        let begin = Date.now();
-                        cap.read(src);
-
-                        cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
-                        cv.imshow("canvasOutput", dst);
-                        // schedule next one.
-                        let delay = 1000/FPS - (Date.now() - begin);
-                        setTimeout(processVideo, delay);
-                    } catch (err) {
-                        console.error(err);
-                    }
-                    
-                };
-                setTimeout(processVideo, 0);
+                
             }
         };
 
-        
+        function buttonClicked() {
+            console.log("tehe");
+        }
     </script>
     <script async src="opencv.js" type="text/javascript"></script>
 </body>
