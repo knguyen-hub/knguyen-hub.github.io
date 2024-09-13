@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>OpenCV Video Examples - Camera</title>
-    <link href="app.css" rel="stylesheet">
+    
 </head>
 <body>
     <h1>OpenCV Camera</h1>
@@ -14,10 +14,10 @@
     <script async src="opencv.js" type="text/javascript" onload="onCvLoaded();"></script>
     <script>
         function onCvLoaded () {
-            console.log('cv', cv);
+            console.log('cv');
             cv.onRuntimeInitialized = onReady;
         }
-        
+
         const video = document.getElementById('video');
         const actionBtn = document.getElementById('actionBtn');
         const width = 300;
@@ -28,6 +28,11 @@
         function onReady () {
             let src;
             let dst;
+            let x;
+            let dsize = new cv.Size(28, 28);
+            let mean = new cv.Mat();
+            let std = new cv.Mat();
+
             const cap = new cv.VideoCapture(video);
 
             actionBtn.addEventListener('click', () => {
@@ -74,8 +79,25 @@
                 }
                 const begin = Date.now();
                 cap.read(src)
-                cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
-                cv.imshow('canvasOutput', dst);
+                src.copyTo(dst);
+
+                x = src.roi(new cv.Rect(30, 30, 100, 100));
+                cv.cvtColor(x, x, cv.COLOR_RGBA2GRAY);
+                cv.resize(x, x, dsize, 0, 0, cv.INTER_AREA);
+                
+                cv.meanStdDev(x, mean, std);
+                let meanVal = mean.doubleAt(0);
+                let standardDeviation = std.doubleAt(0, 0);
+                //console.log(meanVal);
+                //x = (x-meanVal) / standardDeviation;
+                cv.subtract(x, mean, x);
+                cv.divide(x, std, x);
+                console.log(x);
+
+                // draw rect on src
+                cv.rectangle(dst, new cv.Point(30,30), new cv.Point(100, 100), new cv.Scalar(0,0,0), 1);
+                //cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+                cv.imshow('canvasOutput', x);
                 const delay = 1000/FPS - (Date.now() - begin);
                 setTimeout(processVideo, delay);
             }
